@@ -26,9 +26,9 @@ urlpatterns = [
     url(r'^$', schema_view),
     path('admin/', admin.site.urls),
     # Django REST JWT
-    path('auth/token/', obtain_jwt_token),
-    path('auth/token/refresh/', refresh_jwt_token),
-    path('auth/token/verify/', verify_jwt_token),
+    path('auth/token/', obtain_jwt_token, name='fetch_token'),
+    path('auth/token/refresh/', refresh_jwt_token, name='refresh_token'),
+    path('auth/token/verify/', verify_jwt_token, name='verify_token'),
     # Expense app
     path('', include('expense.urls')),
 ]

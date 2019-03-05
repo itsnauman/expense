@@ -1,2 +1,2 @@
 from .users import UserSerializer, ProfileSerializer
-from .auth import CreateAccountSerializer
+from .auth import SignUpSerializer

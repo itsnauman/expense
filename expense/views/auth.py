@@ -2,30 +2,26 @@ from django.contrib.auth.models import User
 from rest_framework_jwt.settings import api_settings
 from rest_framework import permissions
 from rest_framework.response import Response
-
-from rest_framework.views import APIView
-from ..serializers import CreateAccountSerializer
+from rest_framework import status
+from rest_framework import generics
+from ..serializers import SignUpSerializer
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
 
-class CreateAccountView(APIView):
+class CreateAccountView(generics.GenericAPIView):
     permission_classes = (permissions.AllowAny,)
+    serializer_class = SignUpSerializer
 
     def post(self, request):
-        creds = CreateAccountSerializer(data=request.data)
+        serializer = SignUpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        if creds.is_valid():
-            creds.save()
-            print('USER', creds.data)
-            user = User.objects.filter(username=creds.username).exists()
+        user = User.objects.filter(username=serializer.validated_data.get('username')).exists()
+        if user:
+            return Response({'success': False}, status=status.HTTP_403_FORBIDDEN)
 
-            if user:
-                return Response(status=401)
-
-            user = User.objects.create_user(**request.data)
-
-            return Response({"token": jwt_encode_handler(
-                jwt_payload_handler(user)
-            )})
+        saved_user = serializer.save()
+        jwt_token = jwt_encode_handler(jwt_payload_handler(saved_user))
+        return Response({'token': jwt_token}, status=status.HTTP_201_CREATED)
