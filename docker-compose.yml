@@ -1,0 +1,41 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:10.1-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    restart: always
+  server:
+    build: .
+    command: python /app/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - memcached
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+  migrate:
+    image: server_server:latest
+    command: python /app/manage.py migrate
+    depends_on:
+      - db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+  memcached:
+    image: memcached:latest
+    restart: always
+    ports:
+      - 11211:11211
+
+volumes:
+  postgres_data:
