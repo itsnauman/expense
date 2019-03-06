@@ -12,6 +12,8 @@ djangorestframework-jwt = "*"
 django-rest-swagger = "*"
 psycopg2-binary = "*"
 python-memcached = "*"
+django-rest-auth = "*"
+django-allauth = "*"
 
 [requires]
 python_version = "3.7"

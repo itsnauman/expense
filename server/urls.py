@@ -31,4 +31,7 @@ urlpatterns = [
     path('auth/token/verify/', verify_jwt_token, name='verify_token'),
     # Expense app
     path('', include('expense.urls')),
+    # Auth
+    path('auth/', include('rest_auth.urls')),
+    path('auth/registration/', include('rest_auth.registration.urls'))
 ]
